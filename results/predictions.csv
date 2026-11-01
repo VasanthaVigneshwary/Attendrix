@@ -1,0 +1,4 @@
+image,actual,predicted,correct
+S001.jpg,S001,S001,True
+S002.jpg,S002,S002,True
+unknown_guest.jpg,Unknown,no_face_detected,False

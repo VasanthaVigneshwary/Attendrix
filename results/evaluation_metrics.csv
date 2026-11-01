@@ -1,0 +1,2 @@
+timestamp,model,threshold,total_samples,accuracy,precision,recall,f1_score,note
+2026-11-01T21:04:38.457063,"FaceNet (pretrained, 128-dim)",0.4,3,0.6667,0.6667,0.6667,0.6667,Pretrained inference only. No training curves applicable.

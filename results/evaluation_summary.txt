@@ -1,0 +1,23 @@
+
+ATTENDRIX - Evaluation Summary
+================================
+Date         : 2026-11-01 21:04:38
+Model        : FaceNet (pretrained via DeepFace, 128-dim embeddings)
+Threshold    : Cosine distance <= 0.4
+Samples      : 3
+
+Accuracy     : 0.6667
+Precision    : 0.6667 (weighted)
+Recall       : 0.6667 (weighted)
+F1-Score     : 0.6667 (weighted)
+
+IMPORTANT NOTE:
+FaceNet is used as a pretrained feature extractor.
+No training was performed; therefore, training loss/accuracy curves
+are NOT applicable and have NOT been fabricated.
+
+Files produced:
+  results/predictions.csv
+  results/evaluation_metrics.csv
+  results/evaluation_metrics.json
+  results/confusion_matrix.png
