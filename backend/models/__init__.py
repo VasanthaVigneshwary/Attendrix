@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Date, DateTime, ForeignKey, LargeBinary, UniqueConstraint
 from sqlalchemy.orm import relationship
-from .database import Base
+from backend.database import Base
 import datetime
 
 class Student(Base):
@@ -36,3 +36,4 @@ class AttendanceRecord(Base):
     __table_args__ = (UniqueConstraint('session_id', 'student_id', name='_session_student_uc'),)
     session = relationship("AttendanceSession", back_populates="records")
     student = relationship("Student", back_populates="attendance_records")
+

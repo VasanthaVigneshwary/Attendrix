@@ -14,3 +14,4 @@ def init_db():
     """Create all tables if they do not exist"""
     import backend.models as models  # noqa: F401
     Base.metadata.create_all(bind=engine)
+
