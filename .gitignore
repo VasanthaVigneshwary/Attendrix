@@ -1,10 +1,27 @@
+# Virtual environment
 venv/
+
+# Python bytecode and caches
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+
+# Databases and personal records
 *.sqlite
 *.db
+attendance.db
+
+# Sensitive images & demo datasets
+dataset/*.jpg
+dataset/*.png
+dataset/olivetti_cache/
+dataset/students_demo/
+
+# Scratch & temporary scripts
+scratch/
+
+# Environment and system files
 .env
 .DS_Store
 .idea/

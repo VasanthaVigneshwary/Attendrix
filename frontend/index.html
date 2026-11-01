@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>ATTENDRIX – Smart Attendance System</title>
+<link rel="stylesheet" href="/static/style.css"/>
+</head>
+<body>
+<!-- ── Sidebar ─────────────────────────────────────────────────── -->
+<aside class="sidebar">
+  <div class="brand">
+    <span class="brand-icon">🎓</span>
+    <span class="brand-name">ATTENDRIX</span>
+  </div>
+  <nav>
+    <a class="nav-link active" data-tab="overview"    href="#">📊 Overview</a>
+    <a class="nav-link"        data-tab="register"    href="#">➕ Register Student</a>
+    <a class="nav-link"        data-tab="students"    href="#">👥 Students</a>
+    <a class="nav-link"        data-tab="attendance"  href="#">📷 Take Attendance</a>
+    <a class="nav-link"        data-tab="records"     href="#">📋 Records</a>
+    <a class="nav-link"        data-tab="evaluation"  href="#">📈 Evaluation</a>
+    <a class="nav-link"        data-tab="about"       href="#">ℹ️ About</a>
+  </nav>
+  <div class="sidebar-footer">Deep Learning · FaceNet</div>
+</aside>
+
+<!-- ── Main ───────────────────────────────────────────────────── -->
+<main class="main-content">
+
+  <!-- TOAST -->
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- ══ OVERVIEW ════════════════════════════════════════════════ -->
+  <section id="tab-overview" class="tab active">
+    <h1 class="page-title">Dashboard Overview</h1>
+    <div id="date-display" class="date-label"></div>
+    <div class="cards-grid" id="overview-cards">
+      <div class="card blue"><div class="card-icon">👥</div><div class="card-val" id="ov-registered">–</div><div class="card-label">Registered Students</div></div>
+      <div class="card green"><div class="card-icon">✅</div><div class="card-val" id="ov-present">–</div><div class="card-label">Present Today</div></div>
+      <div class="card red"><div class="card-icon">❌</div><div class="card-val" id="ov-absent">–</div><div class="card-label">Absent Today</div></div>
+      <div class="card navy"><div class="card-icon">📊</div><div class="card-val" id="ov-pct">–</div><div class="card-label">Attendance %</div></div>
+    </div>
+    <button class="btn btn-primary" onclick="loadOverview()">🔄 Refresh</button>
+  </section>
+
+  <!-- ══ REGISTER ═════════════════════════════════════════════════ -->
+  <section id="tab-register" class="tab">
+    <h1 class="page-title">Register New Student</h1>
+    <form id="register-form" class="form-card" enctype="multipart/form-data">
+      <div class="form-row">
+        <label>Student ID *<input type="text" name="student_id" required placeholder="e.g. CS2024001"/></label>
+        <label>Full Name *<input type="text" name="name" required placeholder="e.g. Alice Kumar"/></label>
+      </div>
+      <div class="form-row">
+        <label>Department<input type="text" name="department" placeholder="e.g. CSE"/></label>
+        <label>Year<input type="text" name="year" placeholder="e.g. 3"/></label>
+        <label>Section<input type="text" name="section" placeholder="e.g. A"/></label>
+      </div>
+      <label>Face Image * <small>(clear, single-face portrait)</small>
+        <input type="file" name="image" accept="image/*" required id="reg-img-input"/>
+      </label>
+      <img id="reg-preview" class="img-preview hidden" alt="Preview"/>
+      <button type="submit" class="btn btn-primary">Register Student</button>
+    </form>
+    <div id="register-result"></div>
+  </section>
+
+  <!-- ══ STUDENTS LIST ════════════════════════════════════════════ -->
+  <section id="tab-students" class="tab">
+    <h1 class="page-title">Registered Students</h1>
+    <div class="toolbar">
+      <input type="text" id="student-search" placeholder="Search name or ID…" oninput="filterStudentsTable()"/>
+      <button class="btn btn-secondary" onclick="loadStudents()">🔄 Refresh</button>
+    </div>
+    <div class="table-wrap"><table id="students-table">
+      <thead><tr><th>#</th><th>Student ID</th><th>Name</th><th>Dept</th><th>Year</th><th>Section</th><th>Action</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+  </section>
+
+  <!-- ══ TAKE ATTENDANCE ══════════════════════════════════════════ -->
+  <section id="tab-attendance" class="tab">
+    <h1 class="page-title">Take Attendance</h1>
+    
+    <!-- Mode Switcher -->
+    <div class="attendance-modes" style="margin-bottom:16px;display:flex;gap:10px;">
+      <button id="btn-mode-upload" class="btn btn-primary" onclick="setAttendanceMode('upload')">📁 Upload Classroom Image</button>
+      <button id="btn-mode-webcam" class="btn btn-secondary" onclick="setAttendanceMode('webcam')">📷 Live Webcam Attendance</button>
+    </div>
+
+    <!-- Upload Card -->
+    <div id="card-att-upload" class="form-card">
+      <label>Upload Classroom Image (JPG / PNG)
+        <input type="file" id="att-img-input" accept="image/*"/>
+      </label>
+      <img id="att-preview" class="img-preview hidden" alt="Preview"/>
+      <div style="margin-top:14px;">
+        <button class="btn btn-primary" onclick="takeAttendance()">🔍 Detect &amp; Mark Attendance</button>
+      </div>
+    </div>
+
+    <!-- Webcam Card -->
+    <div id="card-att-webcam" class="form-card hidden">
+      <div style="margin-bottom:12px;">
+        <button class="btn btn-primary" onclick="startWebcam()">▶️ Start Camera</button>
+        <button class="btn btn-secondary" onclick="captureWebcam()" id="btn-capture-webcam" disabled>📸 Capture &amp; Mark</button>
+        <button class="btn btn-danger" onclick="stopWebcam()" id="btn-stop-webcam" disabled>⏹️ Stop Camera</button>
+      </div>
+      <video id="webcam-video" autoplay playsinline style="width:100%;max-width:540px;border-radius:10px;background:#1e293b;display:none;"></video>
+      <canvas id="webcam-canvas" style="display:none;"></canvas>
+      <div id="webcam-status" style="font-size:0.85rem;color:#64748b;margin-top:6px;">Camera stopped. Click 'Start Camera' to stream.</div>
+    </div>
+
+    <div id="att-spinner" class="spinner hidden"></div>
+    <div id="att-result"></div>
+  </section>
+
+  <!-- ══ RECORDS ══════════════════════════════════════════════════ -->
+  <section id="tab-records" class="tab">
+    <h1 class="page-title">Attendance Records</h1>
+    <div class="toolbar">
+      <input type="date" id="rec-date" onchange="loadRecords()"/>
+      <input type="text" id="rec-search" placeholder="Search name/ID…" oninput="loadRecords()"/>
+      <button class="btn btn-secondary" onclick="exportCSV()">⬇️ Export CSV</button>
+      <button class="btn btn-secondary" onclick="loadRecords()">🔄 Refresh</button>
+    </div>
+    <div id="rec-summary" class="summary-bar"></div>
+    <div class="table-wrap"><table id="records-table">
+      <thead><tr><th>#</th><th>Student ID</th><th>Name</th><th>Dept</th><th>Year</th><th>Sec</th><th>Date</th><th>Time</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+  </section>
+
+  <!-- ══ EVALUATION ═══════════════════════════════════════════════ -->
+  <section id="tab-evaluation" class="tab">
+    <h1 class="page-title">Evaluation &amp; Model Performance</h1>
+    <div class="info-card">
+      <h2>Model Architecture: Pretrained FaceNet (128-dim via DeepFace)</h2>
+      <p>ATTENDRIX utilizes <strong>pretrained FaceNet</strong> – an Inception-ResNet deep convolutional network trained on massive facial benchmarks to map facial crops directly into a compact Euclidean space where distances directly correspond to facial similarity.</p>
+      
+      <h3>Why Training Curves Are Not Applicable</h3>
+      <p>Training curves (loss/accuracy over iterations) are generated exclusively when training or fine-tuning weights from scratch. In ATTENDRIX, FaceNet is leveraged strictly for <strong>pretrained feature inference</strong>. Pretrained models require no backpropagation, epochs, or artificial training curves; reporting genuine inference metrics is the scientifically correct and academically rigorous standard.</p>
+      
+      <h3>Similarity Metric &amp; Threshold Justification</h3>
+      <p>Identity classification is determined via <strong>Cosine Distance</strong>:</p>
+      <pre>Cosine Distance = 1.0 - (u · v) / (||u|| * ||v||)</pre>
+      <p>Empirical evaluation establishes a threshold of <strong>threshold = 0.40</strong>. Embeddings with cosine distance &le; 0.40 are identified; distances &gt; 0.40 are strictly rejected as <strong>Unknown</strong> to prevent false attendance.</p>
+      
+      <div style="display:flex;gap:12px;margin:18px 0;flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="loadEvalResults()">📂 View Evaluation Metrics</button>
+        <button class="btn btn-secondary" onclick="runLiveEvaluation()">⚡ Run Live Evaluation</button>
+      </div>
+
+      <div id="eval-loading" class="spinner hidden"></div>
+      <div id="eval-display" class="hidden" style="margin-top:20px;">
+        <div class="cards-grid" id="eval-metrics-grid">
+          <div class="card blue"><div class="card-val" id="em-acc">–</div><div class="card-label">Accuracy</div></div>
+          <div class="card green"><div class="card-val" id="em-prec">–</div><div class="card-label">Precision (Weighted)</div></div>
+          <div class="card green"><div class="card-val" id="em-rec">–</div><div class="card-label">Recall (Weighted)</div></div>
+          <div class="card navy"><div class="card-val" id="em-f1">–</div><div class="card-label">F1-Score</div></div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px;margin-top:20px;">
+          <div>
+            <h3>Confusion Matrix Heatmap</h3>
+            <img id="cm-image" src="/evaluation/confusion-matrix" alt="Confusion Matrix" style="width:100%;max-width:440px;border-radius:8px;border:1px solid #cbd5e1;box-shadow:0 2px 8px rgba(0,0,0,0.06);margin-top:8px;"/>
+          </div>
+          <div>
+            <h3>Sample Prediction Verification</h3>
+            <div class="table-wrap" style="max-height:360px;overflow-y:auto;margin-top:8px;">
+              <table id="eval-pred-table">
+                <thead><tr><th>Image</th><th>Actual ID</th><th>Predicted ID</th><th>Status</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ ABOUT ════════════════════════════════════════════════════ -->
+  <section id="tab-about" class="tab">
+    <h1 class="page-title">About ATTENDRIX</h1>
+    <div class="info-card">
+      <h2>Project Introduction</h2>
+      <p><strong>ATTENDRIX</strong> is an automated classroom attendance system built as an academic project by a 3rd-year B.Tech Artificial Intelligence &amp; Data Science student. It uses deep learning-based face recognition to identify registered students and automatically record their attendance.</p>
+      <h2>Problem Statement</h2>
+      <p>Traditional manual attendance is time-consuming, error-prone and susceptible to proxy attendance. ATTENDRIX solves this by automating the process using AI-based facial recognition.</p>
+      <h2>Objectives</h2>
+      <ul>
+        <li>Detect multiple faces in a classroom image.</li>
+        <li>Recognise registered students using FaceNet embeddings.</li>
+        <li>Mark attendance automatically; reject unknown faces.</li>
+        <li>Prevent duplicate entries within the same session.</li>
+        <li>Provide a searchable, exportable attendance record.</li>
+      </ul>
+      <h2>Technology Stack</h2>
+      <table class="tech-table"><tbody>
+        <tr><th>Backend</th><td>Python, FastAPI, SQLAlchemy, SQLite</td></tr>
+        <tr><th>Deep Learning</th><td>DeepFace, Pretrained FaceNet, TensorFlow / Keras</td></tr>
+        <tr><th>Face Detection</th><td>OpenCV Haar Cascade</td></tr>
+        <tr><th>Frontend</th><td>HTML5, CSS3, Vanilla JavaScript</td></tr>
+        <tr><th>Evaluation</th><td>Scikit-learn, Matplotlib, Seaborn</td></tr>
+      </tbody></table>
+      <h2>Recognition Workflow</h2>
+      <pre>
+Input Image
+  → Face Detection (OpenCV Haar Cascade)
+  → Face Extraction (crop bounding box)
+  → FaceNet Embedding (128-dim, via DeepFace)
+  → Cosine Similarity vs Registered Embeddings
+  → Identity (if distance ≤ 0.40) OR Unknown
+  → Attendance Marking (duplicate-safe)
+      </pre>
+    </div>
+  </section>
+
+</main>
+
+<script src="/static/script.js"></script>
+</body>
+</html>
+
