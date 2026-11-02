@@ -13,7 +13,7 @@
 ## 1. Final Source Code Repository
 
 - **Project Location**: `D:\Attendrix`
-- **GitHub Repository Placeholder**: `https://github.com/your-username/ATTENDRIX-Smart-Attendance-System` *(Insert student repository URL upon remote push)*
+- **GitHub Repository**: `https://github.com/VasanthaVigneshwary/ATTENDRIX`
 - **Primary Entry Points**:
   - Web Server & API: `backend/main.py`
   - Deep Learning Pipeline: `backend/services/face_utils.py` & `backend/services/recognition.py`
@@ -153,3 +153,4 @@ In Assignment 1, the theoretical foundation and architectural blueprint for auto
 ## 9. Conclusion
 
 ATTENDRIX successfully demonstrates the practical application of Deep Learning (FaceNet) and Computer Vision (OpenCV) within a full-stack educational technology workflow. The system meets all engineering, functional, and academic requirements set forth for Assignment 3.
+
